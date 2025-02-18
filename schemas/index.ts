@@ -20,3 +20,20 @@ export const PasswordResetSchema=z.object({
 export const SetPasswordSchema=z.object({
     password:z.string().min(6)
 })
+export const createHotelSchema=z.object({
+    name:z.string(),
+    location:z.string(),
+    featured:z.boolean().default(false).optional(),
+    contactNumber:z.string(),
+    roomsAvailable:z.number(),
+    contact_email:z.string().email(),
+    hotelImages: z.string().array(),
+ 
+    facilities: z.string(),
+    description: z.string(),
+    menuImages:z.string().array(),
+    featuredCusine:z.string()
+
+
+
+})
