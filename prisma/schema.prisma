@@ -26,7 +26,7 @@ model User {
   image         String?
   password      String?
   accounts      Account[]
-  owner         Owner?
+  owner         Owner? // user may or may not be owner
   role          UserRole        @default(USER)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -77,7 +77,7 @@ model PasswordResetToken {
 model Owner {
   id        String      @id @default(uuid())
   userId    String      @unique
-  hotel     Hotel?
+  hotel     Hotel? //optional one to one relation
   lounge    Lounge?
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   resturant Restaurant?
@@ -93,7 +93,7 @@ model Hotel {
   contact_email   String
   rooms_available Int
   name            String
-  image           Image[]
+  image           Image[] 
   facilities      String
   description     String
   menuId          String    @unique
