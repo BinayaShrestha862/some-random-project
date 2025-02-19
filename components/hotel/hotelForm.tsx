@@ -13,7 +13,7 @@ import * as z from 'zod'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import ImageUpload from '../ui/image-upload'
-import { createHotel } from '@/action/hotel'
+import { createHotel } from '@/action/hotel/hotel'
 
 const HotelForm = () => {
     const [pending,setTransition]=useTransition()

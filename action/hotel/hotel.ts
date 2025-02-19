@@ -34,7 +34,6 @@ export const createHotel = async (
     contact_email,
     description,
     facilities,
-
     hotelImages,
     featuredCusine,
     menuImages,
@@ -103,3 +102,6 @@ export const createHotel = async (
     return (`Failed to create hotel: ${error.message}`);
   }
 };
+export const updateHotel=async()=>{
+
+}
