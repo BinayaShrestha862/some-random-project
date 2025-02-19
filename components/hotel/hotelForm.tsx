@@ -1,10 +1,10 @@
 "use client"
-import { login } from '@/action/login'
+
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import FormAlertMessage from '@/components/ui/form-message'
 import { Input } from '@/components/ui/input'
-import { createHotelSchema, LoginSchema } from '@/schemas'
+import { createHotelSchema } from '@/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useState, useTransition } from 'react'
 import {useForm} from "react-hook-form"
@@ -13,6 +13,7 @@ import * as z from 'zod'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import ImageUpload from '../ui/image-upload'
+import { createHotel } from '@/action/hotel'
 
 const HotelForm = () => {
     const [pending,setTransition]=useTransition()
@@ -38,21 +39,27 @@ const HotelForm = () => {
         }
 
     })
-    const onSubmit=(values:z.infer<typeof createHotelSchema>)=>{
+    const onSubmit= (values:z.infer<typeof createHotelSchema>)=>{
         setErr("")
-        setSuccess("")
-        setTransition(()=>
-            console.log(values)
-    )
+        setSuccess("") // we will set it to desired from the object returned from createHotel()
+       setTransition(async() => { //sets the pending to true after the function is fired and to false after the function is completed
+            try {
+                const hotel=await createHotel(values); // calling the server action from here, it simply returns a string we will create some sort of success and failed object later
+                alert(hotel)
+              
+            } catch (error:any) {
+                alert(error.message);
+            }
+        });
 
 
     }
   return (
-    <div className='p-5 w-full border rounded-md shadow-md '>
-        <h1 className='text-center  text-2xl font-bold font-mono'>Create hotel here</h1>
+    <div className='p-5 w-full lg:w-[70%] m-auto mt-10 mb-10 border rounded-md shadow-md '>
+        <h1 className='text-center  text-3xl font-bold'>Create hotel here</h1>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className='grid grid-cols-3 gap-3 p-3 py-6'>
+                <div className='grid grid-cols-2 gap-3 p-3 py-6'>
                     <FormField control={form.control} name='name'
                     render={({field})=>(
                         <FormItem>

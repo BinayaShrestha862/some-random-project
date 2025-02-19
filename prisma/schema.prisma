@@ -81,6 +81,10 @@ model Owner {
   lounge    Lounge?
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   resturant Restaurant?
+  address   String
+  contactNumber String
+  
+
 }
 
 model Hotel {
@@ -88,7 +92,7 @@ model Hotel {
   ownerId         String    @unique
   owner           Owner     @relation(fields: [ownerId], references: [id])
   location        String
-  featured        Boolean
+  featured        Boolean? @default(false)
   contact_number  String
   contact_email   String
   rooms_available Int

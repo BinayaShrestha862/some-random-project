@@ -1,27 +1,40 @@
-"use server";
-import { useServerUser } from "@/hooks/use-server-user";
+"use server"
+
+
+import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { createHotelSchema } from "@/schemas";
+import { Hotel } from "@prisma/client";
 import { z } from "zod";
 
-export const createHotel = async (values: z.infer<typeof createHotelSchema>) => {
-  const user = await useServerUser();
-  if (!user) throw new Error("Not authenticated");
+export const createHotel = async (
+  values: z.infer<typeof createHotelSchema>
+): Promise<string> => {
+  const session = await auth()
+  const user = session?.user
+  if (!user) return "Not authenticated";
 
-  const owner = await db.owner.findUnique({
+  let owner = await db.owner.findUnique({
     where: { userId: user.id },
   });
-  if (!owner) throw new Error("User is not an owner");
+  if(owner?.id){
+  const existingHotel=await db.hotel.findUnique({where:{
+    ownerId:owner?.id
+  }})
+  if(existingHotel) return("hotel already exists")
+  }
 
   const validatedFields = createHotelSchema.safeParse(values);
-  if (!validatedFields.success) throw new Error("Invalid fields");
+  if (!validatedFields.success) {
+    return ("Invalid fields: " + validatedFields.error.message);
+  }
 
   const {
     contactNumber,
     contact_email,
     description,
     facilities,
-    featured,
+
     hotelImages,
     featuredCusine,
     menuImages,
@@ -29,31 +42,32 @@ export const createHotel = async (values: z.infer<typeof createHotelSchema>) => 
     name,
     roomsAvailable,
   } = validatedFields.data;
+  if (!owner){
+    console.log("creating a new owner");
+    if(!user.id){
+      return("user id not found")
+    }
+    owner = await db.owner.create({
+      data:{
+        address:location,
+        contactNumber,
+        userId:user.id,
 
-  // ✅ Fix: Check for undefined instead of falsy values
-  if (
-    !contactNumber ||
-    !contact_email ||
-    !description ||
-    !facilities ||
-    featured === undefined ||
-    !hotelImages.length ||
-    !menuImages.length ||
-    !featuredCusine ||
-    !location ||
-    !name ||
-    roomsAvailable === undefined
-  ) {
-    throw new Error("Not all fields are provided");
+      }
+    })
+  }
+
+  if (!hotelImages.length || !menuImages.length) {
+    return("Hotel images and menu images are required");
   }
 
   try {
-
+    
     const newHotel = await db.hotel.create({
       data: {
         ownerId: owner.id,
         location,
-        featured,
+        
         contact_number: contactNumber,
         contact_email,
         rooms_available: roomsAvailable,
@@ -80,12 +94,12 @@ export const createHotel = async (values: z.infer<typeof createHotelSchema>) => 
 
     const updatedHotel = await db.hotel.update({
       where: { id: newHotel.id },
-      data: { menuId: newMenu.id }, 
+      data: { menuId: newMenu.id },
     });
 
-    return updatedHotel;
-  } catch (error) {
+    return "hotel created";
+  } catch (error:any) {
     console.error("Error creating hotel:", error);
-    throw new Error("Something went wrong");
+    return (`Failed to create hotel: ${error.message}`);
   }
 };
