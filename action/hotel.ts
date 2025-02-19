@@ -110,12 +110,24 @@ export const updateHotel = async (
   const session = await auth();
   const user = session?.user;
   if (!user) return "Not authenticated";
+
+  const hotelOwner = await db.owner.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (!hotelOwner) return "Only Owner authenticated";
+
   const existingHotel = await db.hotel.findUnique({
     where: {
       id: hotelId,
     },
   });
+
   if (!existingHotel) return "hotel not found";
+
+  if (hotelOwner.id !== existingHotel.ownerId) return "not your hotel";
 
   const validatedFields = createHotelSchema.safeParse(values);
   if (!validatedFields.success) {
@@ -139,37 +151,74 @@ export const updateHotel = async (
   if (!hotelImages.length || !menuImages.length) {
     return "Hotel images and menu images are required";
   }
-try {
+  try {
     await db.hotel.update({
-      where:{
-        id:hotelId,
-      },data:{
-        contact_number:contactNumber,
+      where: {
+        id: hotelId,
+      },
+      data: {
+        contact_number: contactNumber,
         contact_email,
         description,
         facilities,
         location,
         name,
-        rooms_available:roomsAvailable,
-        image:{
-          deleteMany:{}
-        }
-  
-      }
-    })
+        rooms_available: roomsAvailable,
+        image: {
+          deleteMany: {},
+        },
+      },
+    });
     await db.hotel.update({
-      where:{
-        id:hotelId
-      },data:{
+      where: {
+        id: hotelId,
+      },
+      data: {
         image: {
           create: hotelImages.map((url) => ({ url })),
         },
-      }
-    })
+      },
+    });
     return "success";
-} catch (error) {
-  console.log(error)
-  return "error"
-}
+  } catch (error) {
+    console.log(error);
+    return "error";
+  }
 };
 
+export const deleteHotel = async (
+  hotelId: string): Promise<string> => {
+  const session = await auth();
+  const user = session?.user;
+  if (!user) return "Not authenticated";
+
+  const hotelOwner = await db.owner.findUnique({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (!hotelOwner) return "Only Owner authenticated";
+
+  const existingHotel = await db.hotel.findUnique({
+    where: {
+      id: hotelId,
+    },
+  });
+
+  if (!existingHotel) return "hotel not found";
+
+  if (hotelOwner.id !== existingHotel.ownerId) return "not your hotel";
+
+  try {
+    await db.hotel.deleteMany({
+      where: {
+        id: hotelId,
+      },
+    });
+    return " delete hotel";
+  } catch (error) {
+    console.log(error);
+    return "error on deletion of hotel";
+  }
+};
