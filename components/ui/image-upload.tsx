@@ -81,7 +81,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       </div>
 
       <CldUploadWidget
-        uploadPreset="spkd0oze"
+        uploadPreset="fm9mdx7i"
         options={{ multiple: true }} // Allow multiple file selection
         onSuccess={(results) => {
           handleUpload(results as Results);
