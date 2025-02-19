@@ -230,8 +230,8 @@ const HotelForm = () => {
                 </div>
                 <FormAlertMessage type='error' message={error||urlError}/>
                 <FormAlertMessage type='success' message={success}/>
-                    <Link href="/auth/change-password"><Button variant="ghost" disabled={pending} className='mb-2 hover:underline font-semibold text-sm' >Forgot password?</Button></Link>
-                <Button disabled={pending} className='w-full text-md font-semibold '>Login</Button>
+                 
+                <Button disabled={pending} className='w-full text-md font-semibold '>Create</Button>
                 <div className='mt-4'></div>
             </form>
 
