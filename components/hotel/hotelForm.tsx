@@ -13,9 +13,16 @@ import * as z from 'zod'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import ImageUpload from '../ui/image-upload'
-import { createHotel } from '@/action/hotel'
+import { createHotel, updateHotel } from '@/action/hotel/hotel'
+import { Hotel,Image, Menu } from '@prisma/client'
 
-const HotelForm = () => {
+    interface hotelFormProps {
+        initialData: (Hotel & { 
+          image: Image[], 
+          menu: (Menu & { images: Image[] }) | null 
+        }) | null;
+      }
+const HotelForm:React.FC<hotelFormProps> = ({initialData}) => {
     const [pending,setTransition]=useTransition()
     const params=useSearchParams()
     const urlError=params.get("error")==="OAuthAccountNotLinked"?"This email is already in use with another provider!":""
@@ -24,7 +31,19 @@ const HotelForm = () => {
     const form = useForm<z.infer<typeof createHotelSchema>>({
 
         resolver:zodResolver(createHotelSchema),
-        defaultValues:{
+        defaultValues:initialData?{
+            contact_email:initialData.contact_email,
+            contactNumber:initialData.contact_number,
+            description:initialData.description,
+            facilities:initialData.facilities,
+            hotelImages:initialData.image.map(e=>e.url),
+            location:initialData.location,
+            name: initialData.name,
+            menuImages:initialData.menu?.images.map(e=>e.url)||[],
+            featuredCusine:initialData.menu?.featured_cousine||"",
+            roomsAvailable:initialData.rooms_available
+
+        }:{
           contact_email:"",
           contactNumber:"",
           description:"",
@@ -44,7 +63,7 @@ const HotelForm = () => {
         setSuccess("") // we will set it to desired from the object returned from createHotel()
        setTransition(async() => { //sets the pending to true after the function is fired and to false after the function is completed
             try {
-                const hotel=await createHotel(values); // calling the server action from here, it simply returns a string we will create some sort of success and failed object later
+                const hotel=initialData?await updateHotel(values,initialData.id):await createHotel(values) // calling the server action from here, it simply returns a string we will create some sort of success and failed object later
                 alert(hotel)
               
             } catch (error:any) {
