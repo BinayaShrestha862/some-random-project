@@ -35,7 +35,6 @@ export const createHotel = async (
     contact_email,
     description,
     facilities,
-
     hotelImages,
     featuredCusine,
     menuImages,
