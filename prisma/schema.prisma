@@ -139,8 +139,8 @@ model Restaurant {
   name           String
   facilities     String
   description    String
-  menuId         String    @unique
-  menu           Menu      @relation(fields: [menuId], references: [id])
+  menuId         String?    @unique
+  menu           Menu?     @relation(fields: [menuId], references: [id])
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   images         Image[]

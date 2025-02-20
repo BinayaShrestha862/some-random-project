@@ -1,3 +1,4 @@
+import { features } from "node:process"
 import * as z from "zod"
 export const LoginSchema=z.object({
     email:z.string().email(),
@@ -49,4 +50,18 @@ export const createLoungeSchema=z.object({
     opening_hours:z.string(),
     images:z.string().array(),
     
+})
+
+export const createRestaurantSchema = z.object({
+    name:z.string(),
+    location:z.string(),
+    featured:z.boolean().default(false).optional(),
+    contact_number:z.string(),
+    contact_email:z.string().email(),
+    opening_hours:z.string(),
+    facilities: z.string(),
+    description: z.string(),
+    images:z.string().array(),
+    menuImages:z.string().array(),
+    featuredCusine:z.string()
 })
