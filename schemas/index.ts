@@ -86,3 +86,10 @@ export const createReviewSchema = z.object({
     touristSpotId: z.string().optional(),
     loungeId: z.string().optional(),
   });
+
+  export const createBookingSchema = z.object({
+    userId: z.string(),
+    hotelId: z.string().optional(),
+    loungeId: z.string().optional(),
+    restaurantId: z.string().optional(),
+  })
