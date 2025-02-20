@@ -65,3 +65,13 @@ export const createRestaurantSchema = z.object({
     menuImages:z.string().array(),
     featuredCusine:z.string()
 })
+
+export const createTouristSpotSchema = z.object({
+    name:z.string(),
+    location:z.string(),
+    description:z.string(),
+    openingHours:z.string(),
+    entryFee:z.string(),
+    images:z.string().array(),
+    
+})
