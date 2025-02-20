@@ -1,4 +1,6 @@
+import exp from "node:constants"
 import { features } from "node:process"
+import { comment } from "postcss"
 import * as z from "zod"
 export const LoginSchema=z.object({
     email:z.string().email(),
@@ -75,3 +77,12 @@ export const createTouristSpotSchema = z.object({
     images:z.string().array(),
     
 })
+
+export const createReviewSchema = z.object({
+    rating: z.number().min(1).max(5),
+    comment: z.string(),
+    restaurantId: z.string().optional(),
+    hotelId: z.string().optional(),
+    touristSpotId: z.string().optional(),
+    loungeId: z.string().optional(),
+  });
