@@ -37,3 +37,16 @@ export const createHotelSchema=z.object({
 
 
 })
+
+export const createLoungeSchema=z.object({
+    name:z.string(),
+    location:z.string(),
+    capacity:z.number(),
+    facilities:z.string(),
+    description:z.string(),
+    contact_number:z.string(),
+    contact_email:z.string().email(),
+    opening_hours:z.string(),
+    images:z.string().array(),
+    
+})
